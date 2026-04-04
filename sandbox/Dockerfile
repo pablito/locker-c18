@@ -14,9 +14,8 @@ RUN curl -sSL https://dot.net/v1/dotnet-install.sh | bash -s -- \
 ENV PATH="$PATH:/usr/share/dotnet"
 ENV DOTNET_ROOT="/usr/share/dotnet"
 
-# uv
-RUN curl -LsSf https://astral.sh/uv/install.sh | sh
-ENV PATH="$PATH:/root/.local/bin"
+# uv — install system-wide so non-root users can find it
+RUN curl -LsSf https://astral.sh/uv/install.sh | UV_INSTALL_DIR=/usr/local/bin sh
 
 # Claude Code
 RUN npm install -g @anthropic-ai/claude-code
@@ -26,6 +25,10 @@ RUN npm install -g @githubnext/github-copilot-cli
 
 # OpenCode
 RUN npm install -g opencode-ai
+
+# Run as non-root user; UID 1000 matches the typical dev host user
+RUN useradd -m -s /bin/bash agent
+USER agent
 
 WORKDIR /workspace
 CMD ["/bin/bash"]

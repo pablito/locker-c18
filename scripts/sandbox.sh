@@ -20,6 +20,7 @@ fi
 echo "🚀 Avvio sandbox: $*"
 docker run --rm -it \
   --name "agent-$(date +%s)" \
+  --user "$(id -u):$(id -g)" \
   -v "${PWD}:/workspace" \
   -w /workspace \
   -e ANTHROPIC_API_KEY \
