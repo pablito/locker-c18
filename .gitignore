@@ -1,0 +1,29 @@
+# Devbox
+.devbox/
+
+# Environment files con secrets — MAI committare
+.env
+.env.local
+*.env
+
+# MCP config generata dinamicamente
+.mcp.json
+
+# Python
+.venv/
+__pycache__/
+*.pyc
+
+# .NET
+bin/
+obj/
+
+# Node
+node_modules/
+
+# Docker
+*.tar
+
+# OS
+.DS_Store
+Thumbs.db
