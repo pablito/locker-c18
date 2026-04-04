@@ -2,11 +2,11 @@
   "packages": [
     "python@3.12",
     "nodejs@20",
-    "uv@latest",
+    "uv@0.9.18",
     "git@latest",
     "jq@latest",
     "curl@latest",
-    "docker@latest"
+    "docker@28.1.1"
   ],
   "env": {
     "AGENT_SANDBOX_IMAGE": "agent-sandbox:latest"

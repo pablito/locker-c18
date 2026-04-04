@@ -33,13 +33,13 @@ RUN apt-get update && apt-get install -y ca-certificates gnupg \
 RUN pip3 install --break-system-packages uv
 
 # Claude Code
-RUN npm install -g @anthropic-ai/claude-code
+RUN npm install -g @anthropic-ai/claude-code@2.1.92
 
 # GitHub Copilot CLI
-RUN npm install -g @githubnext/github-copilot-cli
+RUN npm install -g @githubnext/github-copilot-cli@0.1.36
 
 # OpenCode
-RUN npm install -g opencode-ai
+RUN npm install -g opencode-ai@1.3.13
 
 # Run as non-root user; UID 1000 matches the typical dev host user
 RUN useradd -m -s /bin/bash agent

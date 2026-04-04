@@ -3,21 +3,29 @@ set -e
 
 echo "🔧 Locker C18 — setup iniziale"
 
-# 1. Installa devbox se non presente
+# 1. Controlla devbox — non auto-installare via curl|bash (non verificabile).
+# Installa manualmente seguendo le istruzioni ufficiali:
+#   https://www.jetify.com/devbox/docs/installing_devbox/
 if ! command -v devbox &>/dev/null; then
-  echo "→ Installazione devbox..."
-  # SECURITY: pipe-to-bash installs cannot be integrity-verified at runtime.
-  # Before running this script, manually audit the installer URL or use the
-  # official package manager installation documented at https://www.jetify.com/devbox/docs/installing_devbox/
-  curl -fsSL https://get.jetify.com/devbox | bash
+  echo "❌ devbox non trovato."
+  echo "   Installalo manualmente: https://www.jetify.com/devbox/docs/installing_devbox/"
+  exit 1
 fi
 
-# 2. Installa direnv se non presente
+# 2. Installa direnv tramite package manager (verificato da apt/brew/nix GPG).
 if ! command -v direnv &>/dev/null; then
   echo "→ Installazione direnv..."
-  # SECURITY: same caveat as above. Alternative: install via your system package
-  # manager (apt install direnv / brew install direnv / nix-env -i direnv).
-  curl -sfL https://direnv.net/install.sh | bash
+  if command -v apt-get &>/dev/null; then
+    sudo apt-get install -y direnv
+  elif command -v brew &>/dev/null; then
+    brew install direnv
+  elif command -v nix-env &>/dev/null; then
+    nix-env -i direnv
+  else
+    echo "❌ Nessun package manager supportato trovato (apt/brew/nix)."
+    echo "   Installa direnv manualmente: https://direnv.net/docs/installation.html"
+    exit 1
+  fi
 fi
 
 # 3. Hook direnv nella shell dell'utente.
@@ -34,9 +42,9 @@ fi
 # Try PATH-visible binary first, then common installer fallback locations.
 # Use || true: if this fails (e.g. fresh install, PATH not yet updated), the
 # user can run 'direnv allow .' themselves after reopening their terminal.
-_DIRENV=$(command -v direnv 2>/dev/null \
-  || echo "${HOME}/.local/bin/direnv" \
-  || echo "/usr/local/bin/direnv")
+for _DIRENV in "$(command -v direnv 2>/dev/null)" "${HOME}/.local/bin/direnv" "/usr/local/bin/direnv"; do
+  [[ -x "$_DIRENV" ]] && break
+done
 if [[ -x "$_DIRENV" ]]; then
   "$_DIRENV" allow . || true
 fi
