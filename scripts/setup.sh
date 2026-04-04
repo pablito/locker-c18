@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -e
 
-echo "🔧 Agent DevBox — setup iniziale"
+echo "🔧 Locker C18 — setup iniziale"
 
 # 1. Installa devbox se non presente
 if ! command -v devbox &>/dev/null; then
@@ -27,7 +27,7 @@ fi
 if grep -qi microsoft /proc/version 2>/dev/null; then
   if [[ "$PWD" == /mnt/* ]]; then
     echo "⚠️  WSL2 rilevato: sposta il repo dentro il filesystem WSL (~/) per performance migliori"
-    echo "   Esempio: cp -r . ~/agent-devbox && cd ~/agent-devbox"
+    echo "   Esempio: cp -r . ~/locker-c18 && cd ~/locker-c18"
   fi
 fi
 

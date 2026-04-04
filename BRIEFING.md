@@ -1,4 +1,4 @@
-# Agent DevBox — Briefing per Claude Code
+# Locker C18 — Briefing per Claude Code
 
 ## Obiettivo
 
@@ -58,7 +58,7 @@ graph TD
 ## Struttura del repository
 
 ```
-agent-devbox/
+locker-c18/
 ├── devbox.json
 ├── devbox.lock                  # generato da devbox, non editare
 ├── .envrc
@@ -82,6 +82,6 @@ agent-devbox/
 ## Note aperte / decisioni future
 
 - [ ] Valutare se aggiungere MCP servers custom per il progetto specifico del team
-- [ ] Decidere se pubblicare su npm come CLI installabile (`npx agent-devbox init`)
+- [ ] Decidere se pubblicare su npm come CLI installabile (`npx locker-c18 init`)
 - [ ] Gestione secrets di team (Jetify Secrets vs `.env` locale)
 - [ ] Aggiungere GitHub Actions per testare il setup su matrix Linux/WSL2

@@ -1,4 +1,4 @@
-# Agent DevBox
+# Locker C18
 
 Ambiente di sviluppo isolato e riproducibile per agenti AI.
 Supporta Claude Code, GitHub Copilot CLI e OpenCode su Linux e WSL2.
@@ -12,8 +12,8 @@ Supporta Claude Code, GitHub Copilot CLI e OpenCode su Linux e WSL2.
 ## Setup (una volta sola)
 
 ```bash
-git clone https://github.com/TUO_ORG/agent-devbox
-cd agent-devbox
+git clone https://github.com/TUO_ORG/locker-c18
+cd locker-c18
 bash scripts/setup.sh
 ```
 
