@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200">
+  <defs>
+    <mask id="tagMask">
+      <!-- full tag -->
+      <circle cx="100" cy="100" r="85" fill="white"/>
+      <!-- transparent hole -->
+      <circle cx="100" cy="42" r="12" fill="black"/>
+    </mask>
+  </defs>
+
+  <!-- Tag body with hole cut out -->
+  <circle cx="100" cy="100" r="85" fill="#3db549" mask="url(#tagMask)"/>
+
+  <!-- C-18 text: regular weight, ~half the tag diameter wide -->
+  <text x="100" y="116"
+        font-family="Arial, Helvetica, sans-serif"
+        font-size="42" font-weight="400"
+        text-anchor="middle"
+        fill="#ffffff"
+        letter-spacing="1">C-18</text>
+</svg>

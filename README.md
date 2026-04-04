@@ -1,7 +1,16 @@
 # Locker C18
 
+<p align="center">
+  <img src="logo.svg" alt="Locker C18 logo" width="160"/>
+</p>
+
+> *"The locker. It's smaller on the outside."*
+> — Men in Black II (2002)
+
 Ambiente di sviluppo isolato e riproducibile per agenti AI.
 Supporta Claude Code, GitHub Copilot CLI e OpenCode su Linux e WSL2.
+
+Come l'armadietto C-18 della Grand Central Station nel film, questo ambiente contiene molto più di quanto sembri dall'esterno: un universo completo di tool, runtime e agenti AI, accessibile con un singolo comando.
 
 ## Prerequisiti
 
