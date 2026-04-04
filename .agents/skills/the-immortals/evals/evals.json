@@ -1,0 +1,43 @@
+{
+  "skill_name": "the-immortals",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "I'm designing a new payments feature for our e-commerce app. We need to support multiple payment gateways (Stripe, PayPal, crypto), handle partial refunds, and keep an audit trail. Get the team.",
+      "expected_output": "The skill should classify this as a Full Council task (spans design patterns, clean code, domain modeling, and performance). Should route to all 5 Immortals and synthesize. Expected voices: Fowler (Strategy pattern for gateways, refactoring the payment flow), Uncle Bob (naming clarity, SRP for each gateway adapter, separation of refund logic), Evans (Payment as an aggregate root, Refund as a domain event, bounded context for billing), Beck (TDD approach — test each gateway adapter in isolation, test refund invariants), Linus (audit trail as append-only log for performance, don't over-abstract the happy path). Should end with a synthesis that integrates all perspectives.",
+      "assertions": [
+        "Routes to all 5 Immortals (Fowler, Beck, Uncle Bob, Evans, Linus)",
+        "Includes a Synthesis section summarising the majority recommendation",
+        "Includes a Dissents section naming any disagreements between members",
+        "Linus appears and contributes even though he was not explicitly requested"
+      ],
+      "files": []
+    },
+    {
+      "id": 2,
+      "prompt": "@fowler What pattern should I use to handle different payment gateways without changing core checkout logic every time we add one?",
+      "expected_output": "The skill should detect the direct override `@fowler` and route only to Fowler — not the full council. Fowler should respond in character: academic, pattern-literate, systems-thinking. Should identify Strategy pattern as the primary answer (encapsulate each gateway as an interchangeable strategy), mention the Open/Closed Principle as motivation, possibly note that Abstract Factory works if gateways have multiple related objects (payment + refund + webhook handler). Should NOT include Beck, Uncle Bob, Evans, or Linus responses.",
+      "assertions": [
+        "Routes ONLY to Fowler — no other Immortal speaks",
+        "Identifies the Strategy pattern by name as the primary recommendation",
+        "Mentions the Open/Closed Principle as motivation for the pattern choice",
+        "Responds in Fowler's voice: academic, pattern-literate, structurally precise"
+      ],
+      "files": []
+    },
+    {
+      "id": 3,
+      "prompt": "Our Order service is getting complex. The domain model has grown and performance is degrading — queries are slow and we're not sure if the model itself is causing the cost or if it's just query optimization. We don't want to restructure prematurely.",
+      "expected_output": "The skill should classify this as a Duo task and route to Evans + Linus — not the full council. The task sits at the intersection of domain model design (Evans) and performance (Linus). Evans should examine whether the aggregate boundaries are causing the query complexity — are the aggregates too large, are invariants pulling in too much data? Linus should challenge whether the model is doing unnecessary work and push for concrete numbers before any restructuring. Should include a brief synthesis reconciling Evans's structural perspective and Linus's cost perspective. Should NOT invoke Fowler, Beck, or Uncle Bob.",
+      "assertions": [
+        "Routes to Evans AND Linus as a Duo — not the full council",
+        "Evans addresses aggregate boundary design and whether model structure is driving query cost",
+        "Linus addresses the performance cost of the model and demands concrete measurements before changes",
+        "Includes a brief Duo synthesis reconciling the structural and performance perspectives",
+        "Does NOT invoke Fowler, Beck, or Uncle Bob"
+      ],
+      "files": []
+    }
+  ]
+}
+

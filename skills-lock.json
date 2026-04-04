@@ -1,0 +1,10 @@
+{
+  "version": 1,
+  "skills": {
+    "the-immortals": {
+      "source": "yldgio/vibe-grimoire",
+      "sourceType": "github",
+      "computedHash": "a51764f7d2e2dd108b9e655d431982e1114d2d75de0f33a4a242174c3b88c250"
+    }
+  }
+}
