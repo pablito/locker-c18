@@ -1,0 +1,7 @@
+{
+  "database": "dolt",
+  "backend": "dolt",
+  "dolt_mode": "embedded",
+  "dolt_database": "locker_c18",
+  "project_id": "52731b06-6a98-41e4-b8e9-fe82e6557f94"
+}
