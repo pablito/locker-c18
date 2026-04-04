@@ -8,10 +8,21 @@ RUN apt-get update && apt-get install -y \
     nodejs npm \
     && rm -rf /var/lib/apt/lists/*
 
-# .NET 8 — installed via Microsoft's signed APT repository (GPG-verified)
+# .NET 8 — installed via Microsoft's signed APT repository.
+# The GPG key is downloaded then fingerprint-verified before trusting it.
+# Expected fingerprint: BC52 8686 B50D 79E3 39D3 721C EB3E 94AD BE12 29CF
+# Source: https://learn.microsoft.com/en-us/linux/packages
 RUN apt-get update && apt-get install -y ca-certificates gnupg \
     && curl -fsSL https://packages.microsoft.com/keys/microsoft.asc \
-       | gpg --dearmor -o /usr/share/keyrings/microsoft.gpg \
+       -o /tmp/microsoft.asc \
+    && gpg --no-default-keyring \
+           --keyring /tmp/ms-verify.gpg \
+           --import /tmp/microsoft.asc \
+    && gpg --no-default-keyring \
+           --keyring /tmp/ms-verify.gpg \
+           --fingerprint "BC528686B50D79E339D3721CEB3E94ADBE1229CF" \
+    && gpg --dearmor < /tmp/microsoft.asc > /usr/share/keyrings/microsoft.gpg \
+    && rm -f /tmp/microsoft.asc /tmp/ms-verify.gpg \
     && echo "deb [arch=amd64 signed-by=/usr/share/keyrings/microsoft.gpg] \
        https://packages.microsoft.com/repos/microsoft-ubuntu-noble-prod noble main" \
        > /etc/apt/sources.list.d/microsoft-prod.list \

@@ -4,34 +4,30 @@
 # dentro la home del devbox shell — non tocca mai il sistema host.
 #
 # SECURITY: download the script, verify its SHA256, then execute.
+# DOTNET_INSTALL_SHA256 MUST be set — unset = hard failure, not a warning.
 # To refresh the checksum after Microsoft updates the script:
-#   curl -sSL https://dot.net/v1/dotnet-install.sh -o /tmp/dotnet-install.sh
-#   sha256sum /tmp/dotnet-install.sh
-# Then update DOTNET_INSTALL_SHA256 below.
-DOTNET_INSTALL_SHA256="${DOTNET_INSTALL_SHA256:-}"
+#   curl -sSL https://dot.net/v1/dotnet-install.sh | sha256sum
+# Then export DOTNET_INSTALL_SHA256=<new-hash> (e.g. in devbox.json or .envrc).
+: "${DOTNET_INSTALL_SHA256:?DOTNET_INSTALL_SHA256 must be set. Run: curl -sSL https://dot.net/v1/dotnet-install.sh | sha256sum}"
 
 DOTNET_DIR="$HOME/.dotnet"
 
 if ! command -v dotnet &>/dev/null; then
   echo "→ Installazione .NET 8..."
-  curl -sSL https://dot.net/v1/dotnet-install.sh -o /tmp/dotnet-install.sh
+  _tmpfile=$(mktemp /tmp/dotnet-install.XXXXXX.sh)
+  curl -sSL https://dot.net/v1/dotnet-install.sh -o "$_tmpfile"
 
-  if [[ -n "$DOTNET_INSTALL_SHA256" ]]; then
-    echo "${DOTNET_INSTALL_SHA256}  /tmp/dotnet-install.sh" | sha256sum -c - || {
-      echo "❌ Checksum mismatch su dotnet-install.sh"
-      rm -f /tmp/dotnet-install.sh
-      exit 1
-    }
-  else
-    echo "⚠️  DOTNET_INSTALL_SHA256 non impostata — esecuzione senza verifica integrità."
-    echo "   Per abilitare la verifica: export DOTNET_INSTALL_SHA256=<hash>"
-  fi
+  echo "${DOTNET_INSTALL_SHA256}  ${_tmpfile}" | sha256sum -c - || {
+    echo "❌ Checksum mismatch su dotnet-install.sh — aggiorna DOTNET_INSTALL_SHA256"
+    rm -f "$_tmpfile"
+    exit 1
+  }
 
-  bash /tmp/dotnet-install.sh \
+  bash "$_tmpfile" \
     --channel 8.0 \
     --install-dir "$DOTNET_DIR" \
     --no-path
-  rm -f /tmp/dotnet-install.sh
+  rm -f "$_tmpfile"
 fi
 
 export DOTNET_ROOT="$DOTNET_DIR"
