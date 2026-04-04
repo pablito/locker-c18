@@ -1,0 +1,18 @@
+[project]
+name = "locker-c18"
+version = "0.1.0"
+description = "Agent development environment"
+requires-python = ">=3.12"
+
+[project.optional-dependencies]
+# Framework agenti più comuni — decommentare quelli necessari
+agents = [
+    # "langchain>=0.3",
+    # "langgraph>=0.2",
+    # "anthropic>=0.40",
+    # "openai>=1.50",
+    # "crewai>=0.80",
+]
+
+[tool.uv]
+dev-dependencies = []
