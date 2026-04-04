@@ -20,7 +20,9 @@ if ! command -v direnv &>/dev/null; then
   curl -sfL https://direnv.net/install.sh | bash
 fi
 
-# 3. Hook direnv nella shell corrente
+# 3. Hook direnv nella shell dell'utente.
+# $SHELL reflects the user's configured login/interactive shell — the right
+# target for the hook even when this script is run with a different interpreter.
 SHELL_NAME=$(basename "$SHELL")
 RC_FILE="$HOME/.${SHELL_NAME}rc"
 if ! grep -q 'direnv hook' "$RC_FILE" 2>/dev/null; then
@@ -28,7 +30,18 @@ if ! grep -q 'direnv hook' "$RC_FILE" 2>/dev/null; then
   echo 'eval "$(direnv hook '"$SHELL_NAME"')"' >> "$RC_FILE"
 fi
 
-# 4. Nota WSL2: assicurarsi di lavorare dentro il filesystem WSL
+# 4. Autorizza direnv per questa directory in modo che si attivi automaticamente.
+# Try PATH-visible binary first, then common installer fallback locations.
+# Use || true: if this fails (e.g. fresh install, PATH not yet updated), the
+# user can run 'direnv allow .' themselves after reopening their terminal.
+_DIRENV=$(command -v direnv 2>/dev/null \
+  || echo "${HOME}/.local/bin/direnv" \
+  || echo "/usr/local/bin/direnv")
+if [[ -x "$_DIRENV" ]]; then
+  "$_DIRENV" allow . || true
+fi
+
+# 5. Nota WSL2: assicurarsi di lavorare dentro il filesystem WSL
 if grep -qi microsoft /proc/version 2>/dev/null; then
   if [[ "$PWD" == /mnt/* ]]; then
     echo "⚠️  WSL2 rilevato: sposta il repo dentro il filesystem WSL (~/) per performance migliori"

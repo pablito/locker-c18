@@ -14,11 +14,11 @@ cat > .mcp.json <<EOF
   "mcpServers": {
     "filesystem": {
       "command": "npx",
-      "args": ["-y", "@modelcontextprotocol/server-filesystem", "${PWD}"]
+      "args": ["-y", "@modelcontextprotocol/server-filesystem", "."]
     },
     "git": {
       "command": "npx",
-      "args": ["-y", "@modelcontextprotocol/server-git", "--repository", "${PWD}"]
+      "args": ["-y", "@modelcontextprotocol/server-git", "--repository", "."]
     },
     "fetch": {
       "command": "npx",

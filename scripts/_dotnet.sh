@@ -12,7 +12,8 @@
 
 DOTNET_DIR="$HOME/.dotnet"
 
-if ! command -v dotnet &>/dev/null; then
+# Check for dotnet 8.x specifically — an older version on PATH must not block install
+if ! (command -v dotnet &>/dev/null && dotnet --version 2>/dev/null | grep -q "^8\."); then
   echo "→ Installazione .NET 8..."
   _tmpfile=$(mktemp /tmp/dotnet-install.XXXXXX.sh)
   curl -sSL https://dot.net/v1/dotnet-install.sh -o "$_tmpfile"
@@ -31,4 +32,4 @@ if ! command -v dotnet &>/dev/null; then
 fi
 
 export DOTNET_ROOT="$DOTNET_DIR"
-export PATH="$PATH:$DOTNET_DIR"
+export PATH="$PATH:$DOTNET_DIR:$DOTNET_DIR/tools"

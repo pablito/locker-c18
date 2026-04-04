@@ -4,6 +4,6 @@ set -e
 echo "🔄 Reset ambiente..."
 rm -rf .venv
 rm -f .mcp.json
-devbox shell -- bash scripts/_mcp.sh
+bash scripts/_mcp.sh
 uv sync --quiet
 echo "✅ Ambiente resettato."
