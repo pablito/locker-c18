@@ -4,7 +4,7 @@
   <img src="logo.svg" alt="Locker C18 logo" width="160"/>
 </p>
 
-> *"The locker. It's smaller on the outside."*
+> *"You are the man who would be king of the train locker."*
 > — Men in Black II (2002)
 
 Ambiente di sviluppo isolato e riproducibile per agenti AI.
