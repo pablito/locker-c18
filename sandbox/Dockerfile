@@ -8,14 +8,18 @@ RUN apt-get update && apt-get install -y \
     nodejs npm \
     && rm -rf /var/lib/apt/lists/*
 
-# .NET 8
-RUN curl -sSL https://dot.net/v1/dotnet-install.sh | bash -s -- \
-    --channel 8.0 --install-dir /usr/share/dotnet
-ENV PATH="$PATH:/usr/share/dotnet"
-ENV DOTNET_ROOT="/usr/share/dotnet"
+# .NET 8 — installed via Microsoft's signed APT repository (GPG-verified)
+RUN apt-get update && apt-get install -y ca-certificates gnupg \
+    && curl -fsSL https://packages.microsoft.com/keys/microsoft.asc \
+       | gpg --dearmor -o /usr/share/keyrings/microsoft.gpg \
+    && echo "deb [arch=amd64 signed-by=/usr/share/keyrings/microsoft.gpg] \
+       https://packages.microsoft.com/repos/microsoft-ubuntu-noble-prod noble main" \
+       > /etc/apt/sources.list.d/microsoft-prod.list \
+    && apt-get update && apt-get install -y dotnet-sdk-8.0 \
+    && rm -rf /var/lib/apt/lists/*
 
-# uv — install system-wide so non-root users can find it
-RUN curl -LsSf https://astral.sh/uv/install.sh | UV_INSTALL_DIR=/usr/local/bin sh
+# uv — installed via pip (PyPI, TLS-verified) to avoid curl|bash
+RUN pip3 install --break-system-packages uv
 
 # Claude Code
 RUN npm install -g @anthropic-ai/claude-code

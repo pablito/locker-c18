@@ -6,12 +6,17 @@ echo "🔧 Locker C18 — setup iniziale"
 # 1. Installa devbox se non presente
 if ! command -v devbox &>/dev/null; then
   echo "→ Installazione devbox..."
+  # SECURITY: pipe-to-bash installs cannot be integrity-verified at runtime.
+  # Before running this script, manually audit the installer URL or use the
+  # official package manager installation documented at https://www.jetify.com/devbox/docs/installing_devbox/
   curl -fsSL https://get.jetify.com/devbox | bash
 fi
 
 # 2. Installa direnv se non presente
 if ! command -v direnv &>/dev/null; then
   echo "→ Installazione direnv..."
+  # SECURITY: same caveat as above. Alternative: install via your system package
+  # manager (apt install direnv / brew install direnv / nix-env -i direnv).
   curl -sfL https://direnv.net/install.sh | bash
 fi
 

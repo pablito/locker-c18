@@ -6,6 +6,8 @@
 
 set -e
 
+: "${AGENT_SANDBOX_IMAGE:?AGENT_SANDBOX_IMAGE must be set (run inside devbox shell)}"
+
 if ! docker info &>/dev/null; then
   echo "❌ Docker non disponibile. Assicurati che Docker Engine sia in esecuzione."
   exit 1
@@ -17,6 +19,8 @@ if ! docker image inspect "$AGENT_SANDBOX_IMAGE" &>/dev/null; then
   docker build -t "$AGENT_SANDBOX_IMAGE" ./sandbox/
 fi
 
+# Only forward the key the agent actually needs — never expose all credentials
+# to a network-connected container. Add -e flags explicitly if other keys are required.
 echo "🚀 Avvio sandbox: $*"
 docker run --rm -it \
   --name "agent-$(date +%s)" \
@@ -24,8 +28,6 @@ docker run --rm -it \
   -v "${PWD}:/workspace" \
   -w /workspace \
   -e ANTHROPIC_API_KEY \
-  -e GITHUB_TOKEN \
-  -e OPENAI_API_KEY \
   --network bridge \
   --memory 4g \
   --cpus 2 \

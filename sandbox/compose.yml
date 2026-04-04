@@ -9,15 +9,16 @@ services:
       - ../:/workspace
     working_dir: /workspace
     environment:
+      # Only forward the key(s) actually needed — never expose all credentials
+      # to a network-connected container. Add entries explicitly if required.
       - ANTHROPIC_API_KEY
-      - GITHUB_TOKEN
-      - OPENAI_API_KEY
     networks:
       - agent-net
     stdin_open: true
     tty: true
 
   agent-secondary:
+    build: .
     image: agent-sandbox:latest
     user: "${UID:-1000}:${GID:-1000}"
     volumes:
@@ -25,8 +26,6 @@ services:
     working_dir: /workspace
     environment:
       - ANTHROPIC_API_KEY
-      - GITHUB_TOKEN
-      - OPENAI_API_KEY
     networks:
       - agent-net
     stdin_open: true
