@@ -17,8 +17,13 @@ Come l'armadietto C-18 della Grand Central Station nel film, questo ambiente con
 - Linux (Ubuntu 22.04+, Debian, Fedora, Arch) oppure WSL2 su Windows
 - Docker Engine in esecuzione
 - Connessione internet per il primo setup
+- **[devbox](https://www.jetify.com/devbox/docs/installing_devbox/)** installato
 
 ## Setup (una volta sola)
+
+1. Installa devbox seguendo le [istruzioni ufficiali](https://www.jetify.com/devbox/docs/installing_devbox/).
+
+2. Clona il repo e avvia il setup:
 
 ```bash
 git clone https://github.com/TUO_ORG/locker-c18
@@ -53,6 +58,10 @@ ANTHROPIC_API_KEY=sk-ant-...
 GITHUB_TOKEN=ghp_...
 OPENAI_API_KEY=sk-...
 ```
+
+> **Nota sandbox:** il container isolato espone solo `ANTHROPIC_API_KEY` per default.
+> Se hai bisogno di altre chiavi nel container, passale esplicitamente con `-e`:
+> `devbox run sandbox -- bash -c "docker run ... -e GITHUB_TOKEN ..."`
 
 ## WSL2
 
