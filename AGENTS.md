@@ -1,6 +1,6 @@
 # Agent Instructions
 
-This project uses **bd** (beads) for issue tracking. Run `bd prime` for full workflow context.
+This project uses **bd** (beads) for issue tracking and **persistent memory**. Run `bd prime` for full workflow context.
 
 ## Quick Reference
 
@@ -11,6 +11,20 @@ bd update <id> --claim  # Claim work atomically
 bd close <id>         # Complete work
 bd dolt push          # Push beads data to remote
 ```
+
+## Memory
+
+Beads is the **primary memory mechanism** for this environment. There is no MCP memory server — use `bd` for all persistent knowledge.
+
+```bash
+bd remember "insight"       # Store a fact for future sessions
+bd memories <keyword>       # Search stored knowledge
+```
+
+**Rules:**
+- Use `bd remember` for any insight worth keeping across sessions
+- Do NOT use MEMORY.md files — they fragment across accounts and agents
+- Do NOT use MCP server-memory — it resets on exit and is not available here
 
 ## Non-Interactive Shell Commands
 

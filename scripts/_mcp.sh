@@ -23,13 +23,10 @@ cat > .mcp.json <<EOF
     "fetch": {
       "command": "npx",
       "args": ["-y", "@modelcontextprotocol/server-fetch"]
-    },
-    "memory": {
-      "command": "npx",
-      "args": ["-y", "@modelcontextprotocol/server-memory"]
     }
   }
 }
 EOF
 
-echo "→ .mcp.json generato con filesystem, git, fetch, memory"
+echo "→ .mcp.json generato con filesystem, git, fetch"
+echo "   Memoria persistente: usa 'bd remember' / 'bd memories' (beads)"
