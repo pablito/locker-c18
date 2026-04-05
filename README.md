@@ -17,11 +17,11 @@ Come l'armadietto C-18 della Grand Central Station nel film, questo ambiente con
 - Linux (Ubuntu 22.04+, Debian, Fedora, Arch) oppure WSL2 su Windows
 - Docker Engine in esecuzione
 - Connessione internet per il primo setup
-- **[devbox](https://www.jetify.com/devbox/docs/installing_devbox/)** installato
+- **[devbox](https://www.jetify.com/docs/devbox/installing-devbox)** installato
 
 ## Setup (una volta sola)
 
-1. Installa devbox seguendo le [istruzioni ufficiali](https://www.jetify.com/devbox/docs/installing_devbox/).
+1. Installa devbox seguendo le [istruzioni ufficiali](https://www.jetify.com/docs/devbox/installing-devbox).
 
 2. Clona il repo e avvia il setup:
 

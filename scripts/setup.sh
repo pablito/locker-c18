@@ -5,10 +5,10 @@ echo "🔧 Locker C18 — setup iniziale"
 
 # 1. Controlla devbox — non auto-installare via curl|bash (non verificabile).
 # Installa manualmente seguendo le istruzioni ufficiali:
-#   https://www.jetify.com/devbox/docs/installing_devbox/
+#   https://www.jetify.com/docs/devbox/installing-devbox
 if ! command -v devbox &>/dev/null; then
   echo "❌ devbox non trovato."
-  echo "   Installalo manualmente: https://www.jetify.com/devbox/docs/installing_devbox/"
+  echo "   Installalo manualmente: https://www.jetify.com/docs/devbox/installing-devbox"
   exit 1
 fi
 
