@@ -24,7 +24,7 @@ locker-c18/
 ├── scaffold/                    # base layer, applied to every project
 │   ├── AGENTS.md                # shared agent conventions (memory, non-interactive shells)
 │   ├── CLAUDE.md                # skeleton project instructions
-│   └── .mcp.json.tpl            # MCP config template (filesystem, git, fetch)
+│   └── .mcp.json                # static MCP config (filesystem, git, fetch)
 ├── templates/                   # named project templates
 │   ├── catalog.json             # machine-readable template index
 │   ├── R-01-rails/
@@ -42,6 +42,8 @@ locker-c18/
 └── ...                          # existing repo files unchanged
 ```
 
+**Skills are template-only.** The `scaffold/` base layer does not include a `skills/` directory. Skills are curated per template and live exclusively under `templates/<id>/skills/`. This is intentional — there are no universal skills that apply to every project type.
+
 ### Template naming convention
 
 Templates are named `<prefix>-<seq>-<slug>`:
@@ -51,11 +53,11 @@ Templates are named `<prefix>-<seq>-<slug>`:
 
 ### catalog.json
 
-A machine-readable index committed alongside the templates:
+A machine-readable index committed at the root of `templates/`:
 
 ```json
 {
-  "version": "1",
+  "version": "1.0.0",
   "templates": [
     {
       "id": "R-01",
@@ -69,51 +71,77 @@ A machine-readable index committed alongside the templates:
 }
 ```
 
+`archetype` describes the project shape — `web-api`, `cli`, `data-pipeline`, `library` — and is informational metadata for the bank and for `--list` output. It has no effect on init behavior in v1.
+
+`version` in `catalog.json` is the **single source of truth for `locker_version`**. `init.sh` reads this field when writing the `.locker` stamp. It must be incremented manually when the catalog or scaffold changes in a way that affects scaffolded projects.
+
 This is the API surface a future locker bank would consume to query available templates and track which projects were scaffolded from which version.
 
 ### init.sh — the generator
 
-```bash
-devbox run init <template-id> [target-dir]
-# Example:
-devbox run init R-01 ~/projects/my-rails-app
-devbox run init --list          # print catalog
+Exposed via `devbox.json` as a named script:
+
+```json
+"scripts": {
+  "init": "bash scripts/init.sh"
+}
 ```
 
-Behavior:
-1. Reads `catalog.json` to resolve the template path
-2. Copies `scaffold/` into `target-dir` (base layer)
-3. Merges `templates/<id>/` on top (template layer overrides scaffold)
-4. Runs each line in `memories.txt` as `bd remember "<line>"` to seed agent memory
-5. Writes a `.locker` stamp file recording template id, version, and date
+Invoked as:
 
-Template files override scaffold files when both exist. The merge is a simple directory copy — no templating engine, no variable substitution in v1.
+```bash
+devbox run init <template-id> [target-dir]
+# Examples:
+devbox run init R-01 ~/projects/my-rails-app
+devbox run init --list          # print catalog with id, name, archetype, description
+```
+
+`target-dir` defaults to the current directory if omitted.
+
+If `--list` is passed, argument parsing short-circuits before any file operations: reads `catalog.json` and prints one line per template in the format `<id>  <name>  <archetype>  <description>`, then exits. No other steps run.
+
+Otherwise (`init <template-id> [target-dir]`):
+
+1. Reads `catalog.json` to resolve the template path; exits with a non-zero error if `id` is not found
+2. Resolves `target-dir`: defaults to the current directory if omitted
+3. Copies `scaffold/` into `target-dir` (base layer)
+4. Merges `templates/<id>/` on top — template files override scaffold files when both exist
+5. `cd`s into `target-dir`; runs `bd init` to initialize the beads store; all subsequent `bd` calls run from this directory
+6. If `memories.txt` exists in the template directory: reads it line by line, skips blank lines and lines beginning with `#`, runs `bd remember "<line>"` for each remaining line. If `memories.txt` is absent, this step is silently skipped — it is optional per template.
+7. Reads the git remote URL (`git remote get-url origin`) from the locker-c18 repo (not from `target-dir`) to populate `source` in the stamp
+8. Writes `.locker` stamp file to `target-dir`; `scaffolded_at` is set to the output of `date -u +%F` (UTC, ISO 8601 format: `YYYY-MM-DD`)
+
+The merge is a plain directory copy — no templating engine, no variable substitution in v1. `scaffold/.mcp.json` is copied as-is.
 
 ### .locker stamp file
 
-Written to the root of the scaffolded project:
+Written to the root of the scaffolded project by `init.sh`:
 
 ```json
 {
   "template": "R-01",
-  "source": "https://github.com/YOUR_ORG/locker-c18",
+  "source": "https://github.com/your-org/locker-c18",
   "scaffolded_at": "2026-04-05",
   "locker_version": "1.0.0"
 }
 ```
 
-Enables future tooling (the bank) to audit which projects exist, which template they used, and whether they're behind the current template version.
+`source` is read from `git remote get-url origin` in the locker-c18 directory at init time — no placeholder, no manual editing required. `locker_version` is read from `catalog.json`. `scaffolded_at` is `date -u +%F` (UTC, `YYYY-MM-DD`).
+
+Enables future tooling (the bank) to audit which projects exist, which template they used, and whether they are behind the current catalog version.
 
 ### Pre-seeded beads memories
 
-Each template ships a `memories.txt` — one fact per line, each run as `bd remember` during `init`:
+Each template ships a `memories.txt` — one fact per line:
 
 ```
-# R-01-rails/memories.txt
+# Lines beginning with # are ignored by init.sh, as are blank lines.
 This project uses RSpec for testing, not Minitest
 Migrations are managed with Active Record — never write raw SQL schema changes
 The Rails convention for service objects is app/services/<noun>_<verb>.rb
 ```
+
+`init.sh` runs `bd init` before processing `memories.txt`, ensuring the beads store exists in the target project before any `bd remember` calls are made.
 
 Agents arrive with project-type context already loaded. No blank slate.
 
@@ -139,14 +167,14 @@ The bank is a decoupled thin wrapper: a GitHub org (or monorepo) where each repo
 - Layered composition (stack × archetype × agent profile)
 - Bank propagation (pushing convention updates to scaffolded projects)
 - CLI packaging (`npx locker-c18 init`)
-- Template versioning beyond the stamp file
+- Version diffing, upgrade paths, or enforcement across scaffolded projects (the stamp records version at scaffold time; detecting drift is a bank concern)
 
 ---
 
 ## Success criteria
 
 - A team lead can run `devbox run init R-01 ~/my-project` and get a fully configured project directory in under 30 seconds
-- `devbox run init --list` prints the catalog
-- The scaffolded project has beads initialized with template-specific memories pre-seeded
-- The `.locker` stamp records provenance unambiguously
-- Adding a new template requires only: a new directory under `templates/` and an entry in `catalog.json`
+- `devbox run init --list` prints the catalog with id, name, archetype, and description
+- After init, `bd memories` in the scaffolded project lists the entries from `memories.txt`
+- The `.locker` stamp in the scaffolded project contains no placeholder values — `source` is the actual remote URL, `locker_version` matches `catalog.json`
+- Adding a new template requires only: a new directory under `templates/`, an entry in `catalog.json`, and no changes to `init.sh`
