@@ -1,6 +1,11 @@
 {
   "version": 1,
   "skills": {
+    "pre-mortem": {
+      "source": "yldgio/vibe-grimoire",
+      "sourceType": "github",
+      "computedHash": "ba1b3ddd9ab312e7adbc0893824fb5372d20a587048728da209920e08e839ccf"
+    },
     "the-immortals": {
       "source": "yldgio/vibe-grimoire",
       "sourceType": "github",
