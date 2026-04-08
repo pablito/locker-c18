@@ -68,11 +68,12 @@ teardown() {
 # Server presence
 # ---------------------------------------------------------------------------
 
-@test "_mcp.sh: .mcp.json includes filesystem, git, fetch, memory servers" {
+@test "_mcp.sh: .mcp.json includes filesystem, git, fetch servers (memory replaced by beads)" {
   bash "$BATS_TEST_DIRNAME/../scripts/_mcp.sh"
   run jq -r '.mcpServers | keys | sort | @csv' .mcp.json
   [[ "$output" == *"filesystem"* ]]
   [[ "$output" == *"fetch"* ]]
   [[ "$output" == *"git"* ]]
-  [[ "$output" == *"memory"* ]]
+  # memory MCP server intentionally omitted — persistent memory uses beads (bd remember / bd memories)
+  [[ "$output" != *"memory"* ]]
 }
