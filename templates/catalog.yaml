@@ -1,0 +1,24 @@
+templates:
+  - id: a-01
+    name: "AI Dev Environment — Full Stack"
+    description: >
+      Ambiente di sviluppo isolato con Python 3.12, Node 20, .NET 8, MCP servers
+      (filesystem, git, fetch) e sandbox Docker per eseguire agenti con permessi
+      massimi senza impatto sull'host. Supporta Claude Code, Copilot CLI e OpenCode.
+    files:
+      - devbox.json
+      - .envrc
+      - .gitignore
+      - AGENTS.md
+      - mcp/config.json
+      - scripts/setup.sh
+      - scripts/reset.sh
+      - scripts/sandbox.sh
+      - scripts/_mcp.sh
+      - scripts/_dotnet.sh
+      - sandbox/Dockerfile
+      - sandbox/compose.yml
+    prerequisites:
+      - devbox
+      - direnv
+      - docker

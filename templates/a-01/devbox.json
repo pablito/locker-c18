@@ -1,0 +1,32 @@
+{
+  "packages": [
+    "python@3.12",
+    "nodejs@20",
+    "uv@0.9.18",
+    "git@latest",
+    "jq@latest",
+    "curl@latest",
+    "docker@28.1.1",
+    "shellcheck@latest",
+    "bats-core@1.11.0"
+  ],
+  "env": {
+    "AGENT_SANDBOX_IMAGE": "agent-sandbox:latest"
+  },
+  "shell": {
+    "init_hook": [
+      "source scripts/_dotnet.sh",
+      "uv sync --quiet",
+      "source scripts/_mcp.sh",
+      "echo '✅ Agent dev environment ready — run: claude / copilot / opencode'"
+    ],
+    "scripts": {
+      "setup":        "bash scripts/setup.sh",
+      "reset":        "bash scripts/reset.sh",
+      "sandbox":      "bash scripts/sandbox.sh",
+      "test":         "shellcheck scripts/*.sh && bats tests/",
+      "test:fast":    "bats tests/",
+      "test:lint":    "shellcheck scripts/*.sh"
+    }
+  }
+}

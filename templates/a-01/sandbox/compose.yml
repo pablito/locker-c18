@@ -1,0 +1,39 @@
+# Orchestrazione per scenari multi-agente
+# Uso: docker compose -f sandbox/compose.yml up
+services:
+  agent-primary:
+    build: .
+    image: agent-sandbox:latest
+    user: "${UID:-1000}:${GID:-1000}"
+    volumes:
+      - ../:/workspace
+    working_dir: /workspace
+    environment:
+      # Only forward the key(s) actually needed — never expose all credentials
+      # to a network-connected container. Add entries explicitly if required.
+      - ANTHROPIC_API_KEY
+    networks:
+      - agent-net
+    stdin_open: true
+    tty: true
+
+  agent-secondary:
+    build: .
+    image: agent-sandbox:latest
+    user: "${UID:-1000}:${GID:-1000}"
+    volumes:
+      - ../:/workspace
+    working_dir: /workspace
+    environment:
+      - ANTHROPIC_API_KEY
+    networks:
+      - agent-net
+    stdin_open: true
+    tty: true
+    profiles:
+      - multi  # attivato solo con: docker compose --profile multi up
+
+networks:
+  agent-net:
+    driver: bridge
+    internal: true  # rete isolata, senza accesso internet diretto tra agenti
