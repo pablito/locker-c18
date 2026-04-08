@@ -104,5 +104,24 @@ Tieni il repo dentro il filesystem WSL (`~/`, non `/mnt/c/`) per performance ott
 
 ## Aggiungere template
 
-Crea una cartella in `templates/<id>/`, aggiungi i file di scaffolding, e registrala in `templates/catalog.yaml`.
-Il formato ID `x-yy` è intenzionalmente arbitrario — consistenza > semantica.
+1. Crea una cartella in `templates/<id>/` con tutti i file di scaffolding
+2. Registra il template in `templates/catalog.yaml` con id, nome, descrizione, lista file e prerequisiti
+3. Apri una PR al repo locker
+
+### Naming convention — formato `x-yy`
+
+Gli ID dei template seguono il formato `x-yy`: una singola lettera seguita da due cifre (es. `a-01`, `c-18`, `z-42`).
+
+**La lettera NON ha significato semantico.** Non indica una categoria, un tipo o una versione.
+È parte di un identificatore arbitrario — come i numeri degli armadietti della Grand Central Station in *Men in Black II*.
+Il nome del repo stesso (`locker-c18`) usa questa convenzione: l'armadietto C-18 conteneva un universo intero.
+
+**Regola pratica:** scegli una lettera e due cifre non ancora usate. La coerenza del formato conta più della logica della scelta.
+
+### Registro ID assegnati
+
+| ID   | Template                          |
+|------|-----------------------------------|
+| a-01 | AI Dev Environment — Full Stack   |
+
+Aggiorna questa tabella quando aggiungi un nuovo template per evitare collisioni.
