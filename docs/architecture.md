@@ -65,6 +65,46 @@ The catalog is built at runtime by reading all `templates/*/meta.yaml` files. No
 
 The current `scaffold/AGENTS.md` in this repo serves as the canonical reference; each template may extend or restrict it.
 
+### 2.4 Merge strategy
+
+Not all files can be applied to a target repo with a simple overwrite. If the developer has already customised their `AGENTS.md` or `.mcp.json`, a blind overwrite destroys their work. The skill applies the following merge semantics per file type:
+
+| File | Strategy | Rationale |
+|---|---|---|
+| `AGENTS.md` | **Append** — template content is appended after the existing file | The developer's own conventions must survive; the template adds, never replaces |
+| `.mcp.json` | **Deep merge** — template object is merged into the existing JSON, with template values winning on key conflicts | Both the developer and the template may define MCP servers; both sets must be present |
+| All other files | **Template wins** — file is overwritten if already present | `devbox.json`, `.envrc`, `scripts/` etc. are environment definitions that should be canonical from the template |
+
+**Re-init note**: merge semantics become relevant only if `/locker` is invoked on a repo that already contains files. The re-init guard (ADR-07 / open issue) is the first line of defence; merge strategy is the fallback behaviour when `--force` is explicitly passed.
+
+See **ADR-05** below for the formal decision record.
+
+### 2.5 `.claude/settings.json` — Beads hooks
+
+Templates **may** include a `.claude/settings.json` file that enables `bd prime` hooks in the scaffolded repo. When present, this file is deployed alongside other template artifacts and registers two hooks with Claude Code:
+
+- **SessionStart**: runs `bd prime` when an agent session begins, loading Beads context into the agent's working memory.
+- **PreCompact**: runs `bd prime` before context compaction, ensuring the agent retains key memories across long sessions.
+
+**Reference format** (matches the locker-c18 skill repo's own `.claude/settings.json`):
+
+```json
+{
+  "hooks": {
+    "SessionStart": [
+      { "hooks": [{ "type": "command", "command": "bd prime" }], "matcher": "" }
+    ],
+    "PreCompact": [
+      { "hooks": [{ "type": "command", "command": "bd prime" }], "matcher": "" }
+    ]
+  }
+}
+```
+
+If the developer already has a `.claude/settings.json`, the skill applies **deep merge** (same strategy as `.mcp.json`) so that existing hooks are preserved and the Beads hooks are added.
+
+**Dependency note**: `bd prime` requires Beads to be initialised in the target repo. The skill should call `bd init` (or verify `.beads/` exists) before deploying this file.
+
 ---
 
 ## 3. Diagrams
@@ -109,9 +149,15 @@ sequenceDiagram
     alt devbox missing
         Skill->>Dev: error + install URL → abort
     end
-    Skill->>FS: copy devbox.json, .envrc
-    Skill->>FS: copy scaffold/AGENTS.md
+    Skill->>FS: copy devbox.json, .envrc (template wins)
+    Skill->>FS: append scaffold/AGENTS.md to existing (or write new)
+    Skill->>FS: deep-merge .mcp.json and .claude/settings.json
     Skill->>FS: create standard folder structure
+    Skill->>FS: write .locker stamp (template id + timestamp + source)
+    alt agent-context.txt present in template
+        Skill->>FS: bd init (if .beads/ absent)
+        Skill->>FS: bd remember <line> for each entry in agent-context.txt
+    end
     Skill->>Dev: done — run: devbox shell
 ```
 
@@ -149,6 +195,18 @@ sequenceDiagram
 
 **Rationale**: Adding a new template should require only dropping a new directory. Zero changes to the entry point or any index file. Discovery over registration.
 
+### ADR-05 — File merge strategy on scaffold
+
+**Decision**: Files applied to the target repo use type-specific merge semantics, not uniform overwrite. `AGENTS.md` is appended; `.mcp.json` and `.claude/settings.json` are deep-merged; all other files are overwritten (template wins).
+
+**Rationale**: `AGENTS.md` encodes the developer's own conventions, which must survive a scaffold operation. A blind overwrite would silently destroy project-specific instructions. `.mcp.json` may contain both developer-configured and template-required MCP servers; both sets must coexist. For environment files (`devbox.json`, `.envrc`), the template definition is canonical and should replace any existing configuration.
+
+**Trigger**: Merge semantics are relevant only when `/locker` is invoked with `--force` on an already-initialised repo (see re-init guard issue). On a clean repo, all operations are effectively "write new file".
+
+**Rejected alternative**: Uniform overwrite for all files. Rejected because it would silently destroy `AGENTS.md` customisations, creating an invisible loss of project context.
+
+**Rejected alternative**: Uniform append for all files. Rejected because appending `devbox.json` produces invalid JSON.
+
 ---
 
 ## 5. Proposed Folder Structure
@@ -163,6 +221,9 @@ locker-c18/
 │       ├── .envrc
 │       ├── scaffold/
 │       │   └── AGENTS.md
+│       ├── agent-context.txt   # optional — per-template Beads seed entries (see ADR-06)
+│       ├── .claude/
+│       │   └── settings.json   # optional — bd prime hooks (see §2.5)
 │       ├── scripts/            # optional — copied if present
 │       │   ├── setup.sh
 │       │   ├── reset.sh
@@ -175,7 +236,10 @@ locker-c18/
 │       └── mcp/                # optional
 │           └── config.json
 ├── docs/
-│   └── architecture.md         # this file
+│   ├── architecture.md         # this file
+│   └── adr/                    # standalone ADR files (ADR-06+)
+│       ├── ADR-06-agent-context-seeding.md
+│       └── ADR-07-provenance-stamp.md
 ├── AGENTS.md                   # instructions for agents working on the skill repo itself
 └── README.md
 ```
@@ -193,5 +257,19 @@ locker-c18/
 | locker-c18-858 | P1 | Ridefinire architettura (questo documento la risolve in parte) |
 | locker-c18-mzt | P1 | Definire entry point skill e flusso interattivo |
 | locker-c18-n5i | P1 | Definire struttura cartelle template |
+| locker-c18-skills | P1 | Skills deployment architecture (symlinks + skills-lock.json) — vedi issue |
 | locker-c18-ak6 | P2 | Documentare naming convention (vedi ADR-02) |
+| locker-c18-reinit | P2 | Re-init guard: rilevare `.locker` ed esigere `--force` — vedi ADR-07 e issue |
 | locker-c18-8d6 | P4 | [Fase 2] Auto-installazione devbox |
+
+## 7. Architectural Decision Index
+
+| ADR | Title | Location |
+|-----|-------|----------|
+| ADR-01 | Skill vs CLI binary | §4 (inline) |
+| ADR-02 | Template naming: x-yy format | §4 (inline) |
+| ADR-03 | Devbox not auto-installed | §4 (inline) |
+| ADR-04 | Single entry point, catalog at runtime | §4 (inline) |
+| ADR-05 | File merge strategy on scaffold | §4 (inline) |
+| ADR-06 | Agent context seeding via `agent-context.txt` | [docs/adr/ADR-06-agent-context-seeding.md](adr/ADR-06-agent-context-seeding.md) |
+| ADR-07 | Provenance stamp (`.locker` file) | [docs/adr/ADR-07-provenance-stamp.md](adr/ADR-07-provenance-stamp.md) |
