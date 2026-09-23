@@ -67,3 +67,17 @@ _Add a brief overview of your project architecture_
 ## Conventions & Patterns
 
 _Add your project-specific conventions here_
+
+## Agent skills
+
+### Issue tracker
+
+Issues and specs live in GitHub Issues for `pablito/locker-c18`; use the `gh` CLI. See `docs/agents/issue-tracker.md`.
+
+### Triage labels
+
+Use the canonical labels `needs-triage`, `needs-info`, `ready-for-agent`, `ready-for-human`, and `wontfix`. See `docs/agents/triage-labels.md`.
+
+### Domain docs
+
+This is a single-context repository: read root `CONTEXT.md` and relevant ADRs under `docs/adr/` before exploring domain changes. See `docs/agents/domain.md`.
